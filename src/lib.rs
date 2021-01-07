@@ -18,9 +18,13 @@ where
     for i in 0..count {
         let sem = semaphore.clone();
         let ctx = context.clone();
-        let tx = tx.clone();
+        // tokio 1 differences
+        // let tx = tx.clone();
+        let mut tx = tx.clone();
         tokio::spawn(async move {
-            let _permit = sem.acquire().await.expect("semaphore is open. qed");
+            // tokio 1 differences
+            // let _permit = sem.acquire().await.expect("semaphore is open. qed");
+            let _permit = sem.acquire().await;
             let start = Instant::now();
             let success = run(ctx, i).await;
             let elapsed = std::cmp::max(Duration::from_micros(1), Instant::now() - start);
@@ -31,7 +35,7 @@ where
     drop(tx);
 
     while let Some(success) = rx.recv().await {
-        println!("handling results");
+        // println!("handling results");
         if success {
             successful += 1;
         }
