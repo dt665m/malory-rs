@@ -6,7 +6,7 @@ edition = "2018"
 license = "MIT"
 repository = "https://github.com/dt665m/malory-rs"
 description = """
-An tool to benchmark Async Functions (Futures)
+A tool to benchmark Async Functions (Futures)
 """
 categories = ["development-tools"]
 keywords = ["async", "test", "bench", "benchmark"]
