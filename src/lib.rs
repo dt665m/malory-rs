@@ -5,7 +5,7 @@ use tokio::sync::mpsc::{channel, Receiver, Sender};
 use tokio::sync::Semaphore;
 use tokio::time::{Duration, Instant};
 
-///
+/// Spawn multiple ```run``` futures and benchmark elapsed time
 pub async fn judge_me<C, F, Fut>(count: usize, parallelism: usize, context: C, run: F)
 where
     C: Clone + Send + Sync + 'static,
@@ -19,30 +19,26 @@ where
     for i in 0..count {
         let sem = semaphore.clone();
         let ctx = context.clone();
-        // tokio 1 differences
-        // let tx = tx.clone();
-        let mut tx = tx.clone();
+        let tx = tx.clone();
         tokio::spawn(async move {
-            // tokio 1 differences
-            // let _permit = sem.acquire().await.expect("semaphore is open. qed");
-            let _permit = sem.acquire().await;
+            let _permit = sem.acquire().await.expect("semaphore is open. qed");
             let start = Instant::now();
             let success = run(ctx, i).await;
             let elapsed = std::cmp::max(Duration::from_micros(1), Instant::now() - start);
-            println!("task {:?} completed in {:?}", i, elapsed);
+            log::debug!("task {:?} completed in {:?}", i, elapsed);
             tx.send(success).await.unwrap();
         });
     }
     drop(tx);
 
     while let Some(success) = rx.recv().await {
-        // println!("handling results");
+        log::debug!("handling results");
         if success {
             successful += 1;
         }
     }
 
-    println!("successful results {:?}", successful);
+    log::debug!("successful results {:?}", successful);
 }
 
 #[cfg(test)]
@@ -52,6 +48,6 @@ mod tests {
     #[tokio::test]
     async fn it_works() {
         let test = "test";
-        judge_me(10, 2, test, |a, i| async { true }).await;
+        judge_me(10, 2, test, |_a, _i| async { true }).await;
     }
 }

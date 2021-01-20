@@ -1,6 +1,6 @@
 [package]
 name = "malory"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Denis Tsai <dt665m@gmail.com>"]
 edition = "2018"
 license = "MIT"
@@ -12,6 +12,6 @@ categories = ["development-tools"]
 keywords = ["async", "test", "bench", "benchmark"]
 
 [dependencies]
-# tokio = { version = "1", features = ["signal", "macros", "sync", "time", "rt-multi-thread"] }
-tokio = { version = "0.2.22", features = ["sync", "signal", "rt-core", "rt-threaded", "net", "stream", "time", "macros"] }
+tokio = { version = "1", features = ["signal", "macros", "sync", "time", "rt-multi-thread"] }
+log = "0.4"
 
